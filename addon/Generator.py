@@ -11,20 +11,15 @@ class Generator:
 
     def generateIdenticalObj(self, activeObj, quantity, radius, xCenter, yCenter):
         for i in range(quantity):
-            meshGeneratedObj = bpy.data.meshes.new("Obj")
-            generatedObj = bpy.data.objects.new("Obj", meshGeneratedObj)
+            generatedObj = bpy.data.objects.new("Obj", activeObj.data)
             
             x = xCenter + random.random()*radius
             y = yCenter + random.random()*radius
             z = 0.0
             # z à l'avenir : sera défini selon la hauteur du terrain relevée à la position x et y
-
             generatedObj.location = (x,y,z)
+
             bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
-
-            meshActiveObj = activeObj.data.meshes
-
-            meshGeneratedObj.from_pydata(meshActiveObj.vertices, [], meshActiveObj.edges)
     
     def generateCube(self, quantity, radius, xCenter, yCenter):
         # Sommets et faces d'un simple cube défini ici
