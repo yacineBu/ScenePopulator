@@ -22,8 +22,8 @@ class Operator_OT_(Operator):
 
     def execute(self, context):
         activeObj = context.view_layer.objects.active
+        scene = context.scene
         
         myGenerator = Generator()
-        # myGenerator.generateCube(30, 20, -35, 5)
-        myGenerator.generateIdenticalObj(activeObj, 30, 20, -35, 5)
+        myGenerator.generateIdenticalObj(activeObj, scene.quantity, scene.radius, scene.xCenter, scene.yCenter)
         return {'FINISHED'}

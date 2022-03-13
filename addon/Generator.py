@@ -12,6 +12,7 @@ class Generator:
     def generateIdenticalObj(self, activeObj, quantity, radius, xCenter, yCenter):
         for i in range(quantity):
             generatedObj = bpy.data.objects.new("Obj", activeObj.data)
+            # Ici, essayer d'utiliser plutôt l'opération de duplication, peut etre ca crashera plus
             
             x = xCenter + random.random()*radius
             y = yCenter + random.random()*radius
