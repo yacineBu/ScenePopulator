@@ -9,7 +9,7 @@ class MainPanel(Panel):
     bl_label = "Population settings"
     bl_category = "Scene populator"
 
-    areaParamProps = ("quantity_SP", "xCenter_SP", "yCenter_SP", "radius_SP")
+    areaParamProps = ("quantity_SP", "xCenter_SP", "yCenter_SP", "sideLength_SP")
 
     def draw(self, context):
         row = self.layout.row()
