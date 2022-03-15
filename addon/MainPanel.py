@@ -1,25 +1,20 @@
 import bpy
 from bpy.types import Panel
+from . Props import Props
 
-class Panel_PT_(Panel):     # Panel_PT est sous-classe de Panel
+class MainPanel(Panel):
     bl_idname = "VIEW3D_PT_Panel"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_label = "Population settings"
     bl_category = "Scene populator"
 
-    props = bpy.props
-    myProps = (
-        ("quantity", props.IntProperty(name="quantity")),
-        ("xCenter", props.IntProperty(name="X Center")),
-        ("yCenter", props.IntProperty(name="Y Center")),
-        ("radius", props.FloatProperty(name="radius"))
-    )
+    areaParamProps = ("quantity_SP", "xCenter_SP", "yCenter_SP", "radius_SP")
 
     def draw(self, context):
         row = self.layout.row()
         row.label(text="area parameters")
-        for (propName, osef) in self.myProps:
+        for (propName) in self.areaParamProps:
             newRow = self.layout.row()
             newRow.prop(context.scene, propName)
        

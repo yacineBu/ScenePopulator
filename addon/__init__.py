@@ -23,30 +23,25 @@ bl_info = {
 }
 
 import bpy
-from . Operator import Operator_OT_
-from . Panel import Panel_PT_
+from . Generate import Generate
+from . MainPanel import MainPanel
+from . Props import Props
 
-classes = (Operator_OT_, Panel_PT_)
+classes = (Generate, MainPanel)
 props = bpy.props
-myProps = (
-    ("quantity", props.IntProperty(name="quantity")),
-    ("xCenter", props.IntProperty(name="X Center")),
-    ("yCenter", props.IntProperty(name="Y Center")),
-    ("radius", props.FloatProperty(name="radius"))
-)
 
 def register():
     for c in classes:
         bpy.utils.register_class(c)
 
-    for (propName, propValue) in myProps:
+    for (propName, propValue) in Props.addonProps:
         setattr(bpy.types.Scene, propName, propValue)
 
 def unregister():
     for c in classes:
         bpy.utils.unregister_class(c)
     
-    for (propName, osef) in myProps:
+    for (propName, osef) in Props.addonProps:
         delattr(bpy.types.Scene, propName)
 
 if __name__ == '__main__':
