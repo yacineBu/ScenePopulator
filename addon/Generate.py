@@ -14,6 +14,24 @@ class Generate(Operator):
         self.generateIdenticalObj(activeObj, scene.quantity_SP, scene.sideLength_SP, scene.xCenter_SP, scene.yCenter_SP)
         return {'FINISHED'}
     
+    # Trié à l'avenir potentiellement
+    def getVerticesOfTerrain(self, terrainObj):
+        """
+        >>> for i in range(0, 10):
+...     bpy.context.blend_data.objects['Plane'].data.vertices[i].co
+...     
+        Vector((-48.96240997314453, -48.96240997314453, 4.66356897354126))
+        Vector((48.96240997314453, -48.96240997314453, -1.244048833847046))
+        Vector((-48.96240997314453, 48.96240997314453, 4.527307987213135))
+        Vector((48.96240997314453, 48.96240997314453, -4.258199214935303))
+        Vector((-50.00000762939453, 0.0, 3.051168203353882))
+        Vector((0.0, -50.00000762939453, 2.074270725250244))
+        Vector((50.00000762939453, 0.0, -5.987868309020996))
+        Vector((0.0, 50.00000762939453, 1.761354684829712))
+        Vector((0.0, -4.470348358154297e-08, -0.40681424736976624))
+        Vector((-50.00000762939453, -25.000001907348633, 4.601046085357666))
+        """
+    
     def generateIdenticalObj(self, activeObj, quantity, sideLength, xCenter, yCenter):
         for i in range(quantity):
             generatedObj = bpy.data.objects.new("Obj", activeObj.data)
