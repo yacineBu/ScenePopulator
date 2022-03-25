@@ -8,8 +8,5 @@ class Props:
         ("xCenter_SP", props.IntProperty(name="X Center")),
         ("yCenter_SP", props.IntProperty(name="Y Center")),
         ("sideLength_SP", props.FloatProperty(name="Side length")),
-        ("terrainObj_SP", props.)
+        ("terrainObj_SP", props)        # A compléter
     )
-
-    # def __getattribute__(self, __name: addonProps):
-    #     pass
