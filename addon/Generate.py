@@ -9,10 +9,8 @@ class Generate(Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
-        activeObj = context.view_layer.objects.active
-        scene = context.scene
-        
-        self.generateIdenticalObj(activeObj, scene.quantity_SP, scene.sideLength_SP, scene.xCenter_SP, scene.yCenter_SP, scene.terrainObjName_SP)
+        activeObj = context.view_layer.objects.active   
+        self.generateIdenticalObj(activeObj)
         return {'FINISHED'}
     
     # A partir d'ici, BIEN DIFFERENCIER 2 CHOSES :
@@ -33,22 +31,21 @@ class Generate(Operator):
     def XYdist(self, p1, p2):
         return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
     
-    def generateIdenticalObj(self, objToDerive, quantity, sideLength, xCenter, yCenter, terrainName):
-        print("lancement de generateIdenticalObj")
+    def generateIdenticalObj(self, objToDerive):
+        scene = bpy.context.scene
+        # print("lancement de generateIdenticalObj")
 
-        for i in range(quantity):
-            # generatedObj = bpy.data.objects.new("Obj", objToDerive.data)
-
+        for i in range(scene.quantity_SP):
             # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
             bpy.ops.object.add_named(name=objToDerive.name)
             bpy.context.scene.objects[objToDerive.name + ".001"].name = objToDerive.name + str(i+2)
             generatedObj = bpy.context.scene.objects[objToDerive.name + str(i+2)]
             
-            x = xCenter - sideLength/2 + random.random()*sideLength
-            y = yCenter - sideLength/2 + random.random()*sideLength
+            x = scene.xCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
+            y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
 
             # Recherche du sommet correspondant le plus possible aux coordonnées x y trouvées juste avant
-            terrainVertsCoords = self.getTerrainVerticesCo(terrainName)
+            terrainVertsCoords = self.getTerrainVerticesCo(scene.terrainObjName_SP)
             terrainVertsCoordsLen = len(terrainVertsCoords)
             bestMatchingVertCo = terrainVertsCoords[0]
             for currentVertCoIndex in range(1, terrainVertsCoordsLen):
@@ -61,21 +58,5 @@ class Generate(Operator):
 
             # bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
 
-    def generateCube(self, quantity, sideLength, xCenter, yCenter):
-        # Sommets et faces d'un simple cube défini ici
-        verts = [(0,0,0),(2,0,0),(2,2,0),(0,2,0),(0,0,2),(2,0,2),(2,2,2),(0,2,2)]
-        faces = [(0,1,2,3),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)]
-
-        for i in range(quantity):
-            meshCube = bpy.data.meshes.new("Cube")
-            objCube = bpy.data.objects.new("Cube", meshCube)
-            
-            x = xCenter + random.random()*sideLength
-            y = yCenter + random.random()*sideLength
-            z = 0.0
-            # z à l'avenir : sera défini selon la hauteur du terrain relevée à la position x et y
-
-            objCube.location = (x,y,z)
-            bpy.context.view_layer.active_layer_collection.collection.objects.link(objCube)
-
-            meshCube.from_pydata(verts, [], faces)
+    def generateVariants(self, objToDerive):
+        pass
