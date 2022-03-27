@@ -10,7 +10,9 @@ class MainPanel(Panel):
     bl_category = "Scene populator"
 
     areaParamProps = ("xCenter_SP", "yCenter_SP", "sideLength_SP")
-    objGeneParamProps = ("quantity_SP", "quantity_SP")
+    scaleVarProps = ("XScaleVar_SP", "YScaleVar_SP", "ZScaleVar_SP")
+    rotationVarProps = ("XRotationVar_SP", "YRotationVar_SP", "ZRotationVar_SP")
+
 
     def draw(self, context):
         row = self.layout.row()
@@ -28,7 +30,20 @@ class MainPanel(Panel):
         newRow = self.layout.row()
         newRow.label(text="Object generation parameters")
 
-        for (propName) in self.objGeneParamProps:
+        newRow = self.layout.row()
+        newRow.prop(context.scene, "quantity_SP")
+        
+        newRow = self.layout.row()
+        newRow.label(text="Scale variations")
+
+        for (propName) in self.scaleVarProps:
+            newRow = self.layout.row()
+            newRow.prop(context.scene, propName)
+
+        newRow = self.layout.row()
+        newRow.label(text="Rotation variations")
+
+        for (propName) in self.rotationVarProps:
             newRow = self.layout.row()
             newRow.prop(context.scene, propName)
 

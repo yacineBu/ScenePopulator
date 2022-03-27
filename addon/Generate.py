@@ -10,7 +10,7 @@ class Generate(Operator):
 
     def execute(self, context):
         activeObj = context.view_layer.objects.active   
-        self.generateIdenticalObj(activeObj)
+        self.generateVariants(activeObj)
         return {'FINISHED'}
     
     # A partir d'ici, BIEN DIFFERENCIER 2 CHOSES :
@@ -56,7 +56,43 @@ class Generate(Operator):
 
             generatedObj.location = (x,y,z)
 
-            # bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
-
     def generateVariants(self, objToDerive):
-        pass
+        scene = bpy.context.scene
+        # print("lancement de generateIdenticalObj")
+
+        for i in range(scene.quantity_SP):
+            # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
+            bpy.ops.object.add_named(name=objToDerive.name)
+            bpy.context.scene.objects[objToDerive.name + ".001"].name = objToDerive.name + str(i+2)
+            generatedObj = bpy.context.scene.objects[objToDerive.name + str(i+2)]
+            
+            x = scene.xCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
+            y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
+
+            # Recherche du sommet correspondant le plus possible aux coordonnées x y trouvées juste avant
+            terrainVertsCoords = self.getTerrainVerticesCo(scene.terrainObjName_SP)
+            terrainVertsCoordsLen = len(terrainVertsCoords)
+            bestMatchingVertCo = terrainVertsCoords[0]
+            for currentVertCoIndex in range(1, terrainVertsCoordsLen):
+                if self.XYdist(terrainVertsCoords[currentVertCoIndex], [x, y]) < self.XYdist(bestMatchingVertCo, [x, y]):
+                    bestMatchingVertCo = terrainVertsCoords[currentVertCoIndex]
+
+            z = bestMatchingVertCo[2]
+
+            generatedObj.location = (x,y,z)
+
+            # Application des variations de scale
+            generatedObj.scale[0] = objToDerive.scale[0] - scene.XScaleVar_SP + random.random()*(scene.XScaleVar_SP*2)
+            generatedObj.scale[1] = objToDerive.scale[1] - scene.YScaleVar_SP + random.random()*(scene.YScaleVar_SP*2)
+            generatedObj.scale[2] = objToDerive.scale[2] - scene.ZScaleVar_SP + random.random()*(scene.ZScaleVar_SP*2)
+
+            # Application des variations de rotation
+            generatedObj.rotation_euler[0] = objToDerive.rotation_euler[0] - scene.XRotationVar_SP + random.random()*(scene.XRotationVar_SP*2)
+            generatedObj.rotation_euler[1] = objToDerive.rotation_euler[1] - scene.YRotationVar_SP + random.random()*(scene.YRotationVar_SP*2)
+            generatedObj.rotation_euler[2] = objToDerive.rotation_euler[2] - scene.ZRotationVar_SP + random.random()*(scene.ZRotationVar_SP*2)
+
+
+            # for i in range(9):
+            #     print(f"ce que j'ajoute : {random.random()*(scene.YRotationVar_SP*2)}")
+
+            print(f"Resultat rot Y : {generatedObj.rotation_euler[1]}")
