@@ -6,6 +6,7 @@ class Generate(Operator):
     bl_idname = "object.generate"       # Associe l'opération à un bouton du panneau
     bl_label = "Generate"
     bl_description = "La description affichée au survol"
+    bl_options = {"REGISTER", "UNDO"}
 
     def execute(self, context):
         activeObj = context.view_layer.objects.active
@@ -32,10 +33,16 @@ class Generate(Operator):
     def XYdist(self, p1, p2):
         return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
     
-    def generateIdenticalObj(self, activeObj, quantity, sideLength, xCenter, yCenter, terrainName):
+    def generateIdenticalObj(self, objToDerive, quantity, sideLength, xCenter, yCenter, terrainName):
+        print("lancement de generateIdenticalObj")
+
         for i in range(quantity):
-            generatedObj = bpy.data.objects.new("Obj", activeObj.data)
-            # Ici, essayer d'utiliser plutôt l'opération de duplication, peut etre ca crashera plus
+            # generatedObj = bpy.data.objects.new("Obj", objToDerive.data)
+
+            # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
+            bpy.ops.object.add_named(name=objToDerive.name)
+            bpy.context.scene.objects[objToDerive.name + ".001"].name = objToDerive.name + str(i+2)
+            generatedObj = bpy.context.scene.objects[objToDerive.name + str(i+2)]
             
             x = xCenter - sideLength/2 + random.random()*sideLength
             y = yCenter - sideLength/2 + random.random()*sideLength
@@ -52,7 +59,7 @@ class Generate(Operator):
 
             generatedObj.location = (x,y,z)
 
-            bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
+            # bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
 
     def generateCube(self, quantity, sideLength, xCenter, yCenter):
         # Sommets et faces d'un simple cube défini ici
