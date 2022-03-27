@@ -11,16 +11,17 @@ class Generate(Operator):
         activeObj = context.view_layer.objects.active
         scene = context.scene
         
-        self.generateIdenticalObj(activeObj, scene.quantity_SP, scene.sideLength_SP, scene.xCenter_SP, scene.yCenter_SP, "")
+        self.generateIdenticalObj(activeObj, scene.quantity_SP, scene.sideLength_SP, scene.xCenter_SP, scene.yCenter_SP, scene.terrainObjName_SP)
         return {'FINISHED'}
     
     # A partir d'ici, BIEN DIFFERENCIER 2 CHOSES :
-    #   1) La liste de SOMMETS, contenant des objets de type "bpy.types.MeshVertex"
+    #   1) La liste de SOMMETS, contenant des objets de type "bpy.types.MeshVertex" (un type où je peux accéder aux coordonnées du sommet, mais pas que)
     #   2) La liste de COORDONNEES, contenant des LISTES de 3 nombres
 
     # Trié et réduit au minimum, à l'avenir
-    def getTerrainVerticesCo(self, terrainObj):
-        allTerrainVerts = bpy.context.blend_data.objects['Plane'].data.vertices     # temporaire
+    def getTerrainVerticesCo(self, terrainObjName):
+        allTerrainVerts = bpy.context.scene.objects[terrainObjName].data.vertices
+
         terrainVertsCo = list()
 
         for i in range(0, len(allTerrainVerts)):
@@ -31,7 +32,7 @@ class Generate(Operator):
     def XYdist(self, p1, p2):
         return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
     
-    def generateIdenticalObj(self, activeObj, quantity, sideLength, xCenter, yCenter, terrain):
+    def generateIdenticalObj(self, activeObj, quantity, sideLength, xCenter, yCenter, terrainName):
         for i in range(quantity):
             generatedObj = bpy.data.objects.new("Obj", activeObj.data)
             # Ici, essayer d'utiliser plutôt l'opération de duplication, peut etre ca crashera plus
@@ -40,7 +41,7 @@ class Generate(Operator):
             y = yCenter - sideLength/2 + random.random()*sideLength
 
             # Recherche du sommet correspondant le plus possible aux coordonnées x y trouvées juste avant
-            terrainVertsCoords = self.getTerrainVerticesCo(terrain)
+            terrainVertsCoords = self.getTerrainVerticesCo(terrainName)
             terrainVertsCoordsLen = len(terrainVertsCoords)
             bestMatchingVertCo = terrainVertsCoords[0]
             for currentVertCoIndex in range(1, terrainVertsCoordsLen):
