@@ -31,31 +31,6 @@ class Generate(Operator):
 
     def XYdist(self, p1, p2):
         return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
-    
-    def generateIdenticalObj(self, objToDerive):
-        scene = bpy.context.scene
-        # print("lancement de generateIdenticalObj")
-
-        for i in range(scene.quantity_SP):
-            # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
-            bpy.ops.object.add_named(name=objToDerive.name)
-            bpy.context.scene.objects[objToDerive.name + ".001"].name = objToDerive.name + str(i+2)
-            generatedObj = bpy.context.scene.objects[objToDerive.name + str(i+2)]
-            
-            x = scene.xCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
-            y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
-
-            # Recherche du sommet correspondant le plus possible aux coordonnées x y trouvées juste avant
-            terrainVertsCoords = self.getTerrainVerticesCo(scene.terrainObjName_SP)
-            terrainVertsCoordsLen = len(terrainVertsCoords)
-            bestMatchingVertCo = terrainVertsCoords[0]
-            for currentVertCoIndex in range(1, terrainVertsCoordsLen):
-                if self.XYdist(terrainVertsCoords[currentVertCoIndex], [x, y]) < self.XYdist(bestMatchingVertCo, [x, y]):
-                    bestMatchingVertCo = terrainVertsCoords[currentVertCoIndex]
-
-            z = bestMatchingVertCo[2]
-
-            generatedObj.location = (x,y,z)
 
     def generateVariants(self, objToDerive):
         scene = bpy.context.scene
@@ -63,9 +38,7 @@ class Generate(Operator):
 
         for i in range(scene.quantity_SP):
             # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
-            bpy.ops.object.add_named(name=objToDerive.name)
-            generatedObj = bpy.context.scene.objects[objToDerive.name + ".001"]
-            generatedObj.name = "Generated" + objToDerive.name
+            generatedObj = bpy.data.objects.new("Generated" + objToDerive.name, objToDerive.data)
             
             x = scene.xCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
             y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
@@ -93,8 +66,8 @@ class Generate(Operator):
             generatedObj.rotation_euler[2] = objToDerive.rotation_euler[2] - math.radians(scene.ZRotationVar_SP) + math.radians(random.random()*(scene.ZRotationVar_SP*2))
             # tester avec un seul math.radians par ligne ?
 
+            bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
+
             # for i in range(9):
             #     print(f"ce que j'ajoute : {random.random()*(scene.YRotationVar_SP*2)}")
-
-            print(f"Resultat rot Y : {generatedObj.rotation_euler[1]}")
             
