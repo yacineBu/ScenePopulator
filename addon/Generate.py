@@ -18,14 +18,28 @@ class Generate(Operator):
     #   1) La liste de SOMMETS, contenant des objets de type "bpy.types.MeshVertex" (un type où je peux accéder aux coordonnées du sommet, mais pas que)
     #   2) La liste de COORDONNEES, contenant des LISTES de 3 nombres
 
+    def isRequired(self, VertX, VertY, BottomLeftGenerationZoneX, BottomLeftGenerationZoneY, sideLength):
+        return (
+            (VertX > BottomLeftGenerationZoneX) and (VertX < BottomLeftGenerationZoneX + sideLength)
+            and
+            (VertY > BottomLeftGenerationZoneY) and (VertY < BottomLeftGenerationZoneY + sideLength)
+            )
+
     # Trié et réduit au minimum, à l'avenir
     def getTerrainVerticesCo(self, terrainObjName):
+        scene = bpy.context.scene
         allTerrainVerts = bpy.context.scene.objects[terrainObjName].data.vertices
-
         terrainVertsCo = list()
 
+        # Paramètres pour la méthode isRequired
+        BottomLeftGenerationZoneX = scene.xCenter_SP - scene.sideLength_SP/2
+        BottomLeftGenerationZoneY = scene.yCenter_SP - scene.sideLength_SP/2
+        sideLength = scene.sideLength_SP
+
         for i in range(0, len(allTerrainVerts)):
-            terrainVertsCo.append(allTerrainVerts[i].co)
+            currentVertCo = allTerrainVerts[i].co
+            if self.isRequired(currentVertCo[0], currentVertCo[1], BottomLeftGenerationZoneX, BottomLeftGenerationZoneY, sideLength):
+                terrainVertsCo.append(currentVertCo)
 
         return terrainVertsCo
 
@@ -34,7 +48,10 @@ class Generate(Operator):
 
     def generateVariants(self, objToDerive):
         scene = bpy.context.scene
-        # print("lancement de generateIdenticalObj")
+
+        # Récupération des coordonnées des sommets du terrain sélectionné
+        terrainVertsCoords = self.getTerrainVerticesCo(scene.terrainObjName_SP)
+        terrainVertsCoordsLen = len(terrainVertsCoords)
 
         for i in range(scene.quantity_SP):
             # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
@@ -44,8 +61,6 @@ class Generate(Operator):
             y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
 
             # Recherche du sommet correspondant le plus possible aux coordonnées x y trouvées juste avant
-            terrainVertsCoords = self.getTerrainVerticesCo(scene.terrainObjName_SP)
-            terrainVertsCoordsLen = len(terrainVertsCoords)
             bestMatchingVertCo = terrainVertsCoords[0]
             for currentVertCoIndex in range(1, terrainVertsCoordsLen):
                 if self.XYdist(terrainVertsCoords[currentVertCoIndex], [x, y]) < self.XYdist(bestMatchingVertCo, [x, y]):
