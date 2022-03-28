@@ -1,6 +1,7 @@
 import bpy
 from bpy.types import Operator
 import random
+import math
 
 class Generate(Operator):
     bl_idname = "object.generate"       # Associe l'opération à un bouton du panneau
@@ -63,8 +64,8 @@ class Generate(Operator):
         for i in range(scene.quantity_SP):
             # Duplication de l'objet sélectionné, puis je le retrouve puis le renomme direct pour le modifier plus tard
             bpy.ops.object.add_named(name=objToDerive.name)
-            bpy.context.scene.objects[objToDerive.name + ".001"].name = objToDerive.name + str(i+2)
-            generatedObj = bpy.context.scene.objects[objToDerive.name + str(i+2)]
+            generatedObj = bpy.context.scene.objects[objToDerive.name + ".001"]
+            generatedObj.name = "Generated" + objToDerive.name
             
             x = scene.xCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
             y = scene.yCenter_SP - scene.sideLength_SP/2 + random.random()*scene.sideLength_SP
@@ -87,12 +88,13 @@ class Generate(Operator):
             generatedObj.scale[2] = objToDerive.scale[2] - scene.ZScaleVar_SP + random.random()*(scene.ZScaleVar_SP*2)
 
             # Application des variations de rotation
-            generatedObj.rotation_euler[0] = objToDerive.rotation_euler[0] - scene.XRotationVar_SP + random.random()*(scene.XRotationVar_SP*2)
-            generatedObj.rotation_euler[1] = objToDerive.rotation_euler[1] - scene.YRotationVar_SP + random.random()*(scene.YRotationVar_SP*2)
-            generatedObj.rotation_euler[2] = objToDerive.rotation_euler[2] - scene.ZRotationVar_SP + random.random()*(scene.ZRotationVar_SP*2)
-
+            generatedObj.rotation_euler[0] = objToDerive.rotation_euler[0] - math.radians(scene.XRotationVar_SP) + math.radians(random.random()*(scene.XRotationVar_SP*2))
+            generatedObj.rotation_euler[1] = objToDerive.rotation_euler[1] - math.radians(scene.YRotationVar_SP) + math.radians(random.random()*(scene.YRotationVar_SP*2))
+            generatedObj.rotation_euler[2] = objToDerive.rotation_euler[2] - math.radians(scene.ZRotationVar_SP) + math.radians(random.random()*(scene.ZRotationVar_SP*2))
+            # tester avec un seul math.radians par ligne ?
 
             # for i in range(9):
             #     print(f"ce que j'ajoute : {random.random()*(scene.YRotationVar_SP*2)}")
 
             print(f"Resultat rot Y : {generatedObj.rotation_euler[1]}")
+            
