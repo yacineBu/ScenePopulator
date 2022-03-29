@@ -25,7 +25,7 @@ class Generate(Operator):
             (VertY > BottomLeftGenerationZoneY) and (VertY < BottomLeftGenerationZoneY + sideLength)
             )
 
-    # Trié et réduit au minimum, à l'avenir
+    # Trié, à l'avenir
     def getTerrainVerticesCo(self, terrainObjName):
         scene = bpy.context.scene
         allTerrainVerts = bpy.context.scene.objects[terrainObjName].data.vertices
@@ -79,7 +79,6 @@ class Generate(Operator):
             generatedObj.rotation_euler[0] = objToDerive.rotation_euler[0] - math.radians(scene.XRotationVar_SP) + math.radians(random.random()*(scene.XRotationVar_SP*2))
             generatedObj.rotation_euler[1] = objToDerive.rotation_euler[1] - math.radians(scene.YRotationVar_SP) + math.radians(random.random()*(scene.YRotationVar_SP*2))
             generatedObj.rotation_euler[2] = objToDerive.rotation_euler[2] - math.radians(scene.ZRotationVar_SP) + math.radians(random.random()*(scene.ZRotationVar_SP*2))
-            # tester avec un seul math.radians par ligne ?
 
             bpy.context.view_layer.active_layer_collection.collection.objects.link(generatedObj)
 
